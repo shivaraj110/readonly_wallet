@@ -1,0 +1,42 @@
+// Rating: 2/10
+// Reason: This code is essentially useless wrapper code that adds no functionality
+// beyond what the underlying bip39 library already provides. It violates DRY principles
+// by creating unnecessary abstraction layers without any added value like error handling,
+// input validation, or documentation. The class serves no purpose as static methods
+// that just forward calls to the same-named functions.
+
+// Better approach: Either use the bip39 functions directly where needed, or if abstraction
+// is truly needed, add meaningful functionality like error handling, logging, or validation.
+
+// Example of what this code should be (if abstraction is needed):
+// import { generateMnemonic as bip39Generate, mnemonicToSeedSync as bip39ToSeed } from "bip39";
+// 
+// export const generateMnemonic = () => {
+//   try {
+//     return bip39Generate();
+//   } catch (error) {
+//     throw new Error(`Failed to generate mnemonic: ${error.message}`);
+//   }
+// };
+// 
+// export const mnemonicToSeedSync = (mnemonic: string) => {
+//   if (!mnemonic || typeof mnemonic !== 'string') {
+//     throw new Error('Invalid mnemonic provided');
+//   }
+//   try {
+//     return bip39ToSeed(mnemonic);
+//   } catch (error) {
+//     throw new Error(`Failed to convert mnemonic to seed: ${error.message}`);
+//   }
+// };
+
+class Bip39 {
+  public static generateMnemonic() {
+    const mnemonic = generateMnemonic();
+    return mnemonic;
+  }
+  public static mnemonicToSeedSync(mnemonic: string) {
+    const seed = mnemonicToSeedSync(mnemonic);
+    return seed;
+  }
+}
