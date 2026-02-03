@@ -268,7 +268,7 @@ export function WalletDashboard() {
           >
             <img src="/nami.png" alt="MeNami" className="w-12 h-12" />
             <div>
-              <h1 className="text-2xl font-bold">MeNami</h1>
+              <h1 className="text-2xl font-bold font-exo2">MeNami</h1>
               <p className="text-sm text-muted-foreground">
                 {accounts.length} account{accounts.length !== 1 ? "s" : ""}
               </p>
@@ -279,9 +279,8 @@ export function WalletDashboard() {
             {/* Network Toggle */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg">
               <span
-                className={`text-sm ${
-                  network === "testnet" ? "text-muted-foreground" : "font-medium"
-                }`}
+                className={`text-sm ${network === "testnet" ? "text-muted-foreground" : "font-medium"
+                  }`}
               >
                 Mainnet
               </span>
@@ -290,9 +289,8 @@ export function WalletDashboard() {
                 onCheckedChange={handleNetworkSwitch}
               />
               <span
-                className={`text-sm ${
-                  network === "mainnet" ? "text-muted-foreground" : "font-medium"
-                }`}
+                className={`text-sm ${network === "mainnet" ? "text-muted-foreground" : "font-medium"
+                  }`}
               >
                 Testnet
               </span>
@@ -438,7 +436,7 @@ export function WalletDashboard() {
                 Create a new account or import one using a private key.
               </DialogDescription>
             </DialogHeader>
-            
+
             <Tabs value={addDialogTab} onValueChange={(v) => setAddDialogTab(v as "create" | "import")}>
               <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="create" className="gap-2" disabled={!mnemonic}>
@@ -458,7 +456,7 @@ export function WalletDashboard() {
                       <Key className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Creating new accounts requires a recovery phrase. 
+                      Creating new accounts requires a recovery phrase.
                       You can only import accounts via private key.
                     </p>
                   </div>

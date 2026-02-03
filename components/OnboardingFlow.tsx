@@ -23,7 +23,7 @@ export function OnboardingFlow() {
   const [copied, setCopied] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
-  
+
   // Private key import state
   const [privateKey, setPrivateKey] = useState("");
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainType>("solana");
@@ -59,7 +59,7 @@ export function OnboardingFlow() {
 
   const handleImportWallet = () => {
     setImportError(null);
-    
+
     if (!validateMnemonic(importedMnemonic)) {
       setImportError("Invalid recovery phrase. Please check and try again.");
       toast.error("Invalid recovery phrase");
@@ -138,7 +138,7 @@ export function OnboardingFlow() {
             className="flex flex-col items-center gap-3"
           >
             <img src="/nami.png" alt="MeNami" className="w-20 h-20" />
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent font-exo2">
               MeNami
             </CardTitle>
           </motion.div>
@@ -395,7 +395,7 @@ export function OnboardingFlow() {
 
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                     <p className="text-xs text-amber-600 dark:text-amber-400">
-                      <strong>Note:</strong> Importing via private key creates a standalone account 
+                      <strong>Note:</strong> Importing via private key creates a standalone account
                       without a recovery phrase. Make sure to back up your private key separately.
                     </p>
                   </div>
