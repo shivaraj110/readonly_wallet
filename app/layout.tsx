@@ -23,6 +23,25 @@ const exo2 = Exo_2({
 export const metadata: Metadata = {
   title: "MeNami",
   description: "A readonly Web3 wallet supporting Solana and Ethereum - Eye of Nami",
+  openGraph: {
+    title: "MeNami",
+    description: "A readonly Web3 wallet supporting Solana and Ethereum - Eye of Nami",
+    images: [
+      {
+        url: "https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLtBmuL6lzTBUkZnfrHpGbvuA3wa4xRhdKlsXq",
+        width: 1200,
+        height: 630,
+        alt: "MeNami - Web3 Wallet",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MeNami",
+    description: "A readonly Web3 wallet supporting Solana and Ethereum - Eye of Nami",
+    images: ["https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLtBmuL6lzTBUkZnfrHpGbvuA3wa4xRhdKlsXq"],
+  },
 };
 
 export default function RootLayout({
