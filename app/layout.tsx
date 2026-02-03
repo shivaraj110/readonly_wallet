@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: "A readonly Web3 wallet supporting Solana and Ethereum - Eye of Nami",
     images: [
       {
-        url: "https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLtBmuL6lzTBUkZnfrHpGbvuA3wa4xRhdKlsXq",
+        url: "https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLp4oL75c3WQFiakIJZyPnlNVCv1ORzeXs5MEq",
         width: 1200,
         height: 630,
         alt: "MeNami - Web3 Wallet",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MeNami",
     description: "A readonly Web3 wallet supporting Solana and Ethereum - Eye of Nami",
-    images: ["https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLtBmuL6lzTBUkZnfrHpGbvuA3wa4xRhdKlsXq"],
+    images: ["https://1d6kykqofq.ufs.sh/f/fVvo0hHNtQOLp4oL75c3WQFiakIJZyPnlNVCv1ORzeXs5MEq"],
   },
 };
 
