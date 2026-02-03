@@ -42,6 +42,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { SolanaLogo, EthereumLogo } from "@/components/icons/BlockchainLogos";
+import { toast } from "sonner";
 
 interface BalanceState {
   [accountId: string]: {
@@ -84,6 +85,7 @@ export function WalletDashboard() {
   const handleCopyAddress = async (address: string) => {
     await navigator.clipboard.writeText(address);
     setCopiedAddress(address);
+    toast.success("Address copied to clipboard");
     setTimeout(() => setCopiedAddress(null), 2000);
   };
 
@@ -91,12 +93,26 @@ export function WalletDashboard() {
     if (mnemonic) {
       await navigator.clipboard.writeText(mnemonic);
       setCopiedMnemonic(true);
+      toast.success("Recovery phrase copied to clipboard");
       setTimeout(() => setCopiedMnemonic(false), 2000);
     }
   };
 
   const handleAddAccount = () => {
-    addAccount(selectedBlockchain, newAccountName || undefined);
+    toast.promise(
+      () =>
+        new Promise<{ name: string }>((resolve) => {
+          setTimeout(() => {
+            const account = addAccount(selectedBlockchain, newAccountName || undefined);
+            resolve({ name: account.name });
+          }, 500);
+        }),
+      {
+        loading: "Creating account...",
+        success: (data) => `${data.name} created successfully!`,
+        error: "Failed to create account",
+      }
+    );
     resetAddDialog();
   };
 
@@ -105,19 +121,34 @@ export function WalletDashboard() {
 
     if (!importPrivateKey.trim()) {
       setImportError("Please enter a private key.");
+      toast.error("Please enter a private key");
       return;
     }
 
     if (!validatePrivateKey(importPrivateKey, selectedBlockchain)) {
       setImportError(`Invalid ${selectedBlockchain === "solana" ? "Solana" : "Ethereum"} private key.`);
+      toast.error(`Invalid ${selectedBlockchain === "solana" ? "Solana" : "Ethereum"} private key`);
       return;
     }
 
-    const account = importAccount(importPrivateKey, selectedBlockchain, newAccountName || undefined);
-    if (!account) {
-      setImportError("Failed to import account. Please check the private key.");
-      return;
-    }
+    toast.promise(
+      () =>
+        new Promise<{ name: string }>((resolve, reject) => {
+          setTimeout(() => {
+            const account = importAccount(importPrivateKey, selectedBlockchain, newAccountName || undefined);
+            if (!account) {
+              reject(new Error("Failed to import account"));
+              return;
+            }
+            resolve({ name: account.name });
+          }, 500);
+        }),
+      {
+        loading: "Importing account...",
+        success: (data) => `${data.name} imported successfully!`,
+        error: "Failed to import account. Please check the private key.",
+      }
+    );
 
     resetAddDialog();
   };
@@ -139,6 +170,7 @@ export function WalletDashboard() {
   const handleSaveEdit = (accountId: string) => {
     if (editName.trim()) {
       renameAccount(accountId, editName.trim());
+      toast.success(`Account renamed to "${editName.trim()}"`);
     }
     setEditingAccount(null);
     setEditName("");
@@ -176,9 +208,38 @@ export function WalletDashboard() {
     if (accounts.length === 0) return;
 
     setIsRefreshingAll(true);
-    await Promise.all(accounts.map((account) => fetchBalance(account)));
+    toast.promise(
+      async () => {
+        await Promise.all(accounts.map((account) => fetchBalance(account)));
+      },
+      {
+        loading: `Refreshing ${accounts.length} balance${accounts.length !== 1 ? "s" : ""}...`,
+        success: "All balances refreshed!",
+        error: "Failed to refresh some balances",
+      }
+    );
     setIsRefreshingAll(false);
   }, [accounts, fetchBalance]);
+
+  // Handle network switch
+  const handleNetworkSwitch = (checked: boolean) => {
+    const newNetwork = checked ? "testnet" : "mainnet";
+    setNetwork(newNetwork);
+    toast.info(`Switched to ${newNetwork === "mainnet" ? "Mainnet" : "Testnet"}`);
+  };
+
+  // Handle remove account with toast
+  const handleRemoveAccount = (accountId: string) => {
+    const account = accounts.find((a) => a.id === accountId);
+    removeAccount(accountId);
+    toast.success(`${account?.name || "Account"} removed`);
+  };
+
+  // Handle logout with toast
+  const handleLogout = () => {
+    clearWallet();
+    toast.success("Wallet logged out successfully");
+  };
 
   const solanaAccounts = accounts.filter((a) => a.blockchain === "solana");
   const ethereumAccounts = accounts.filter((a) => a.blockchain === "ethereum");
@@ -205,11 +266,9 @@ export function WalletDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
+            <img src="/nami.png" alt="MeNami" className="w-12 h-12" />
             <div>
-              <h1 className="text-2xl font-bold">Web3 Wallet</h1>
+              <h1 className="text-2xl font-bold">MeNami</h1>
               <p className="text-sm text-muted-foreground">
                 {accounts.length} account{accounts.length !== 1 ? "s" : ""}
               </p>
@@ -228,9 +287,7 @@ export function WalletDashboard() {
               </span>
               <Switch
                 checked={network === "testnet"}
-                onCheckedChange={(checked) =>
-                  setNetwork(checked ? "testnet" : "mainnet")
-                }
+                onCheckedChange={handleNetworkSwitch}
               />
               <span
                 className={`text-sm ${
@@ -331,8 +388,8 @@ export function WalletDashboard() {
               </Dialog>
             )}
 
-            <Button variant="destructive" size="sm" onClick={clearWallet}>
-              <LogOut className="w-4 h-4 mr-2" />
+            <Button variant="destructive" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4" />
               Logout
             </Button>
           </div>
@@ -558,7 +615,7 @@ export function WalletDashboard() {
                       onStartEdit={handleStartEdit}
                       onSaveEdit={handleSaveEdit}
                       onEditNameChange={setEditName}
-                      onRemove={removeAccount}
+                      onRemove={handleRemoveAccount}
                       onRefreshBalance={() => fetchBalance(account)}
                       getPrivateKey={getAccountPrivateKey}
                     />
@@ -594,7 +651,7 @@ export function WalletDashboard() {
                       onStartEdit={handleStartEdit}
                       onSaveEdit={handleSaveEdit}
                       onEditNameChange={setEditName}
-                      onRemove={removeAccount}
+                      onRemove={handleRemoveAccount}
                       onRefreshBalance={() => fetchBalance(account)}
                       getPrivateKey={getAccountPrivateKey}
                     />

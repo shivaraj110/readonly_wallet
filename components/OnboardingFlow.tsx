@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validateMnemonic, BlockchainType } from "@/lib/wallet";
 import { Plus, Download, Key, Copy, Check, AlertCircle } from "lucide-react";
 import { SolanaLogo, EthereumLogo } from "@/components/icons/BlockchainLogos";
+import { toast } from "sonner";
 
 type OnboardingTab = "create" | "import" | "privatekey";
 
@@ -30,14 +31,28 @@ export function OnboardingFlow() {
   const [privateKeyError, setPrivateKeyError] = useState<string | null>(null);
 
   const handleGenerateMnemonic = () => {
-    const mnemonic = createNewWallet();
-    setGeneratedMnemonic(mnemonic);
+    toast.promise(
+      () =>
+        new Promise<string>((resolve) => {
+          setTimeout(() => {
+            const mnemonic = createNewWallet();
+            setGeneratedMnemonic(mnemonic);
+            resolve(mnemonic);
+          }, 500);
+        }),
+      {
+        loading: "Generating secure recovery phrase...",
+        success: "Wallet created successfully!",
+        error: "Failed to generate wallet",
+      }
+    );
   };
 
   const handleCopyMnemonic = async () => {
     if (generatedMnemonic) {
       await navigator.clipboard.writeText(generatedMnemonic);
       setCopied(true);
+      toast.success("Recovery phrase copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -47,13 +62,28 @@ export function OnboardingFlow() {
     
     if (!validateMnemonic(importedMnemonic)) {
       setImportError("Invalid recovery phrase. Please check and try again.");
+      toast.error("Invalid recovery phrase");
       return;
     }
 
-    const success = importWallet(importedMnemonic);
-    if (!success) {
-      setImportError("Failed to import wallet. Please try again.");
-    }
+    toast.promise(
+      () =>
+        new Promise<boolean>((resolve, reject) => {
+          setTimeout(() => {
+            const success = importWallet(importedMnemonic);
+            if (success) {
+              resolve(success);
+            } else {
+              reject(new Error("Import failed"));
+            }
+          }, 500);
+        }),
+      {
+        loading: "Importing wallet...",
+        success: "Wallet imported successfully!",
+        error: "Failed to import wallet",
+      }
+    );
   };
 
   const handleImportPrivateKey = () => {
@@ -66,13 +96,28 @@ export function OnboardingFlow() {
 
     if (!validatePrivateKey(privateKey, selectedBlockchain)) {
       setPrivateKeyError(`Invalid ${selectedBlockchain === "solana" ? "Solana" : "Ethereum"} private key.`);
+      toast.error("Invalid private key format");
       return;
     }
 
-    const account = importAccount(privateKey, selectedBlockchain, accountName || undefined);
-    if (!account) {
-      setPrivateKeyError("Failed to import account. Please check the private key.");
-    }
+    toast.promise(
+      () =>
+        new Promise<{ name: string }>((resolve, reject) => {
+          setTimeout(() => {
+            const account = importAccount(privateKey, selectedBlockchain, accountName || undefined);
+            if (account) {
+              resolve({ name: account.name });
+            } else {
+              reject(new Error("Import failed"));
+            }
+          }, 500);
+        }),
+      {
+        loading: "Importing account...",
+        success: (data) => `${data.name} imported successfully!`,
+        error: "Failed to import account",
+      }
+    );
   };
 
   const mnemonicWords = generatedMnemonic?.split(" ") || [];
@@ -90,9 +135,11 @@ export function OnboardingFlow() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            className="flex flex-col items-center gap-3"
           >
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-              Web3 Wallet
+            <img src="/nami.png" alt="MeNami" className="w-20 h-20" />
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+              MeNami
             </CardTitle>
           </motion.div>
           <CardDescription className="text-base mt-2">
