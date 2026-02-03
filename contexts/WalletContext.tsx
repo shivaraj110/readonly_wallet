@@ -105,10 +105,15 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   const createNewWallet = useCallback((): string => {
     const newMnemonic = generateMnemonic();
+
+    // Create first accounts for both blockchains
+    const solanaAccount = createAccount(newMnemonic, "solana", 0, "Solana Account 1");
+    const ethereumAccount = createAccount(newMnemonic, "ethereum", 0, "Ethereum Account 1");
+
     setMnemonic(newMnemonic);
-    setAccounts([]);
-    setSolanaIndex(0);
-    setEthereumIndex(0);
+    setAccounts([solanaAccount, ethereumAccount]);
+    setSolanaIndex(1);
+    setEthereumIndex(1);
     setIsInitialized(true);
     return newMnemonic;
   }, []);
@@ -117,10 +122,17 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     if (!validateMnemonic(importedMnemonic)) {
       return false;
     }
-    setMnemonic(importedMnemonic.trim());
-    setAccounts([]);
-    setSolanaIndex(0);
-    setEthereumIndex(0);
+
+    const trimmedMnemonic = importedMnemonic.trim();
+
+    // Create first accounts for both blockchains
+    const solanaAccount = createAccount(trimmedMnemonic, "solana", 0, "Solana Account 1");
+    const ethereumAccount = createAccount(trimmedMnemonic, "ethereum", 0, "Ethereum Account 1");
+
+    setMnemonic(trimmedMnemonic);
+    setAccounts([solanaAccount, ethereumAccount]);
+    setSolanaIndex(1);
+    setEthereumIndex(1);
     setIsInitialized(true);
     return true;
   }, []);
